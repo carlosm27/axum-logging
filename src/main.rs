@@ -1,22 +1,16 @@
 use axum:: {
     routing::{get},
-    //extract::Path,
-    http::StatusCode,
-    //response::IntoResponse,Json,
     Router
 };
 
 
-
 use std::net::SocketAddr;
-//use serde:: {Deserialize, Serialize};
 
-//use serde_json::json;
 
 use tower_http::trace::{self, TraceLayer};
 
 use tracing::Level;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+//use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 
 
@@ -31,17 +25,28 @@ async fn main() {
         //.init();
     
   
-   
-    //tracing_subscriber::fmt::init();
-    
-      tracing_subscriber::fmt()
-        .with_target(false)
+   tracing_subscriber::fmt()
+        .with_file(true)
         .compact()
         .init();
+        
+    //tracing_subscriber::fmt()
+      //  .with_target(false)
+        //.compact()
+        //.init();
+        
+    //tracing_subscriber::fmt()
+        //.with_target(false)
+       // .pretty()
+       // .init();
+        
+      //tracing_subscriber::fmt()
+        //.with_target(false)
+        //.json()
+       // .init();
     
     let app = Router::new()
         .route("/", get(hello_world))
-        .route("/health", get(health))
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
@@ -60,8 +65,4 @@ async fn main() {
 
 async fn hello_world() -> &'static str {
     "Hello World!"
-}
-
-async fn health() -> Result<&'static str, StatusCode> {
-    Ok("UP")
 }
